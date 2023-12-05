@@ -1,7 +1,7 @@
-cardDict = {}
-cardCount = 0
+number_of_cards = {}
+winning_numbers = {}
 
-with open('testInput.txt', 'r') as f:
+with open('input.txt', 'r') as f:
     for line in f:
         cardId, card = line.split(':')
         cardId = cardId.strip().split(" ")[-1]
@@ -15,39 +15,14 @@ with open('testInput.txt', 'r') as f:
         while '' in winningNumbers:
             winningNumbers.remove('')
 
-        cardDict[int(cardId)] = (1, (winningNumbers, numbers))
+        number_of_cards[int(cardId)] = 1
+
+        winning_numbers[int(cardId)] = len(winningNumbers.intersection(numbers))
 
 
-def insertNewCopies(cardId, cardDict):
-    cardCount, (winningNumbers, numbers) = cardDict[cardId]
+for cardId in range(1, len(number_of_cards) + 1):
+    for newCardId in range(cardId + 1, min(cardId + 1 + winning_numbers[cardId], len(number_of_cards) + 1)):
+        number_of_cards[newCardId] += number_of_cards[cardId] 
 
-    winCount = len(winningNumbers.intersection(numbers)) * cardCount
+print(sum([number_of_cards[card] for card in number_of_cards]))
 
-    print(winCount)
-
-    for i in range(cardId + 1, min(winCount + 1, len(cardDict))):
-        count, const = cardDict[i]
-        count += 1
-        cardDict[i] = (count, const)
-
-    return cardDict
-
-
-cardId = 1
-
-while cardId < len(cardDict):
-    insertNewCopies(cardId, cardDict)
-    cardId += 1
-
-
-for k,v in cardDict.items():
-    print(f"{k} : {v}")
-
-sum_of_cards = 0
-
-for cardId in cardDict:
-    count, rest = cardDict[cardId]
-
-    sum_of_cards += count
-
-print(sum_of_cards)
