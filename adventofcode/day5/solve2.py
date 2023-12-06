@@ -1,7 +1,20 @@
 
 with open('input.txt', 'r') as f:
     lines = f.readlines()
-    seeds = list(map(int, lines[0].split(':')[1].strip().split(' ')))
+    seedpairs = list(map(int, lines[0].split(':')[1].strip().split(' ')))
+    seeds = []
+
+    i1 = 0
+    i2 = 1
+    while i2 < len(seedpairs):
+        start, length = (seedpairs[i1], seedpairs[i2])
+
+        seeds.extend(range(start, start+length))
+
+        i1 += 1
+        i2 += 1
+        print(i2)
+
 
     changed = [False] * len(seeds)
     for i in range(3, len(lines)):
