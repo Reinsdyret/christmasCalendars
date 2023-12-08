@@ -6,6 +6,9 @@ class Hand:
     def priority(self):
         hand_set = set(self.hand)
 
+        if 'J' in hand_set:
+            return self.jack_corrected()
+
         if len(hand_set) == 1:
             return 6
 
@@ -31,6 +34,7 @@ class Hand:
 
     def card_priority(self, card):
         mapping = {
+                'J':0,
                 '2':1,
                 '3':2,
                 '4':3,
@@ -40,10 +44,9 @@ class Hand:
                 '8':7,
                 '9':8,
                 'T':9,
-                'J':10,
-                'Q':11,
-                'K':12,
-                'A':13
+                'Q':10,
+                'K':11,
+                'A':12
                 }
 
         return mapping[card]
@@ -60,6 +63,34 @@ class Hand:
         return False
 
 
+    def jack_corrected(self):
+        count_j = self.hand.count('J')
+
+        if count_j == 5:
+            # You have all Jokers and should keep all Aces
+            copy_hand = self.hand
+            self.hand = "AAAAA"
+            priority  = self.priority()
+            self.hand = copy_hand
+            return priority
+
+        # Remove all jacks
+        copy_hand = self.hand
+
+        while 'J' in self.hand:
+            self.hand = self.hand.replace('J', '')
+
+        # Get the most frequent card 
+        best_card = max([(u, self.hand.count(u)) for u in set(self.hand)], key = lambda x: x[1])
+
+        # Add the number of jokers as this best hand to the hand and get priority
+        self.hand += best_card[0] * count_j
+
+        priority = self.priority()
+
+        # Change back into original hand and return
+        self.hand = copy_hand
+        return priority
 
 
     def __str__(self):
@@ -79,4 +110,5 @@ for i in range(len(all_hands)):
     total_value_sum += value * (i+1)
 
 print(total_value_sum)
+print(list(map(str,all_hands)))
 
