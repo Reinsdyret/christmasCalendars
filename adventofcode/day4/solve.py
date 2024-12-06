@@ -62,22 +62,21 @@ print(checkDiag(lines))
 
 # Part two
 
-checkMasDiag1 = lambda lines, row, col: (lines[row-1][col-1] == "M" and lines[row+1][col+1] == "S") and (lines[row-1][col+1] == "M" and lines[row+1][col-1] == "S")
-checkMasDiag2 = lambda lines, row, col: (lines[row-1][col-1] == "M" and lines[row+1][col+1] == "S") and (lines[row-1][col+1] == "S" and lines[row+1][col-1] == "M")
-checkMasDiag3 = lambda lines, row, col: (lines[row-1][col-1] == "S" and lines[row+1][col+1] == "M") and (lines[row-1][col+1] == "M" and lines[row+1][col-1] == "S")
-checkMasDiag4 = lambda lines, row, col: (lines[row-1][col-1] == "S" and lines[row+1][col+1] == "M") and (lines[row-1][col+1] == "S" and lines[row+1][col-1] == "M")
+def checkMasDiag(lines, row, col):
+    diag1 = lines[row-1][col-1] + 'A' + lines[row+1][col+1]
+    diag2 = lines[row+1][col-1] + 'A' + lines[row-1][col+1]
 
-checkMasDiag = lambda lines, row, col: checkMasDiag1(lines, row, col) or checkMasDiag2(lines, row, col) or checkMasDiag3(lines,row,col) or checkMasDiag4(lines,row,col)
+    return (diag1 in ["SAM", "MAS"]) and (diag2 in ["SAM", "MAS"])
+
 
 count = 0
 for row in range(1, len(lines) - 1):
     for col in range(1, len(lines[row]) - 1):
         if lines[row][col] == "A" and checkMasDiag(lines, row, col):
-            #print(lines[row-1][col-1])
-            #print(lines[row+1][col+1])
-            #print("A")
-            #print(lines[row+1][col-1])
-            #print(lines[row-1][col+1])
+            print("-" * 10)
+            print(f"{lines[row-1][col-1]} - {lines[row+1][col+1]}")
+            print("- A -")
+            print(f"{lines[row+1][col-1]} - {lines[row-1][col+1]}")
             count += 1
 print("---")
 print(count)
