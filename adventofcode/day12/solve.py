@@ -72,42 +72,54 @@ def getPerimiter(area, map):
 
 
 def getSides(area, map):
-  sidesX = set()
-  sidesY = set()
+  processedSides = {
+    (x,y): {
+      "checkHor": False,
+      "checkVer": False,
+    } for (x,y) in area
+  }
 
-  moves = [
-    (1,0),
-    (-1,0),
-    (0,1),
-    (0,-1)
-  ]
-  
+  totalSides = 0
+
+  # Horizontal check
+
   for (x,y) in area:
-    for (mx, my) in moves:
-      newX, newY = x + mx, y + my
-      if not inbounds(newX, newY, map) or map[newY][newX] != map[y][x]:
-        if newX == x:
-          sidesY.add((newX, newY, my))
-        else:
-          sidesX.add((newX, newY, mx))
-  
-  allSides = list(sidesX.union(sidesY))
-  countSides = 0
-  besideEachOther = [(0,1,0),(1,0,0),(-1,0,0),(0,-1,0)]
-  
-  for i in range(len(allSides)):
-    found = False
-    for j in range(i + 1, len(allSides)):
-      a = allSides[i]
-      b = allSides[j]
-      c = (a[0] - b[0], a[1] - b[1], a[2] - b[2])
-      if c in besideEachOther:
-        found = True
-    
-    if not found: countSides += 1
-  
-  print(countSides)
-  return countSides
+    contains = []
+    if processedSides[(x,y)]["checkHor"]: continue
+    i = 0
+    while (x + i, y) in area: # Process all on line to right
+      processedSides[(x + i,y)]["checkHor"] = True
+      contains.append((x + i, y))
+      i += 1
+    i = 0
+    while (x - i, y) in area: # Process all on line to left
+      processedSides[(x - i, y)]["checkHor"] = True
+      contains.append((x - i, y))
+      i += 1
+    totalSides += 2
+    print(contains)
+  print(totalSides)
+  # Vertical check
+  for (x,y) in area:
+    #print(x,y)
+    contains = []
+    if processedSides[(x,y)]["checkVer"]: continue
+    i = 0
+    while (x, y + i) in area: # Process all on column down
+      processedSides[(x, y + i)]["checkVer"] = True
+      contains.append((x, y + i))
+      i += 1
+    i = 0
+    while (x, y - i) in area: # Process all on column up
+      processedSides[(x, y - i)]["checkVer"] = True
+      contains.append((x, y - i))
+      i += 1
+    totalSides += 2
+    print(contains)
+  print(totalSides)
+
+
+  return totalSides
 
 
 garden = []
@@ -121,7 +133,11 @@ total_sum_part2 = 0
 
 for area in findAreas(garden):
   #total_sum_part1 += len(area) * getPerimiter(area, garden)
-  total_sum_part2 += len(area) * getSides(area, garden)
+  sides = getSides(area, garden)
+  perimiter = getPerimiter(area, garden)
+  total_sum_part2 += len(area) * sides
+  print(f"Sides: {sides}")
+  print(f"Perimiter: {perimiter}")
 
 print(total_sum_part1)
 print(total_sum_part2)
