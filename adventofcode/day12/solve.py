@@ -74,57 +74,63 @@ def getPerimiter(area, map):
 def getSides(area, map):
   processedSides = {
     (x,y): {
-      "checkHor": False,
-      "checkVer": False,
+      "sideAbove": False,
+      "sideBelow": False,
+      "sideRight": False,
+      "sideLeft" : False
     } for (x,y) in area
   }
 
   totalSides = 0
-
+  
+  sortedX = sorted(list(area), key=lambda a: a[0]) 
+  sortedY = sorted(list(area), key=lambda a: a[1]) 
+  
   # Horizontal check
-
-  for (x,y) in area:
-    contains = []
-    if processedSides[(x,y)]["checkHor"]: continue
-    i = 0
-    while (x + i, y) in area: # Process all on line to right
-      processedSides[(x + i,y)]["checkHor"] = True
-      contains.append((x + i, y))
-      i += 1
-    i = 0
-    while (x - i, y) in area: # Process all on line to left
-      processedSides[(x - i, y)]["checkHor"] = True
-      contains.append((x - i, y))
-      i += 1
-    totalSides += 2
-    print(contains)
-  print(totalSides)
+  for (x,y) in sortedX:
+    # Above
+    if not inbounds(x,y-1,map) or map[y - 1][x] != map[y][x]:
+      # If part of a side
+      if (x-1, y) in processedSides and  processedSides[(x-1, y)]["sideAbove"]:
+        processedSides[(x, y)]["sideAbove"] = True
+      else:
+        totalSides += 1
+        processedSides[(x, y)]["sideAbove"] = True
+    
+    # Below
+    if not inbounds(x,y+1,map) or map[y + 1][x] != map[y][x]:
+      # If part of side
+      if (x-1, y) in processedSides and processedSides[(x-1, y)]["sideBelow"]:
+        processedSides[(x,y)]["sideBelow"] = True
+      else:
+        totalSides += 1
+        processedSides[(x,y)]["sideBelow"] = True
+  
   # Vertical check
-  for (x,y) in area:
-    #print(x,y)
-    contains = []
-    if processedSides[(x,y)]["checkVer"]: continue
-    i = 0
-    while (x, y + i) in area: # Process all on column down
-      processedSides[(x, y + i)]["checkVer"] = True
-      contains.append((x, y + i))
-      i += 1
-    i = 0
-    while (x, y - i) in area: # Process all on column up
-      processedSides[(x, y - i)]["checkVer"] = True
-      contains.append((x, y - i))
-      i += 1
-    totalSides += 2
-    print(contains)
-  print(totalSides)
+  for (x,y) in sortedY:
+    # Left
+    if not inbounds(x-1, y, map) or map[y][x-1] != map[y][x]:
+      if (x,y-1) in processedSides and processedSides[(x,y-1)]["sideLeft"]:
+        processedSides[(x,y)]["sideLeft"] = True
+      else:
+        totalSides += 1
+        processedSides[(x,y)]["sideLeft"] = True
+      
 
+    # Right
+    if not inbounds(x+1, y, map) or map[y][x+1] != map[y][x]:
+      if (x,y-1) in processedSides and processedSides[(x,y-1)]["sideRight"]:
+        processedSides[(x,y)]["sideRight"] = True
+      else:
+        totalSides += 1
+        processedSides[(x,y)]["sideRight"] = True
 
   return totalSides
 
 
 garden = []
 
-with open("simple_test_input2.txt", 'r') as f:
+with open("input.txt", 'r') as f:
   for line in f.readlines():
     garden.append(list(line.strip()))
 
@@ -136,8 +142,6 @@ for area in findAreas(garden):
   sides = getSides(area, garden)
   perimiter = getPerimiter(area, garden)
   total_sum_part2 += len(area) * sides
-  print(f"Sides: {sides}")
-  print(f"Perimiter: {perimiter}")
 
 print(total_sum_part1)
 print(total_sum_part2)
