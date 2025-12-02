@@ -1,35 +1,35 @@
-count = 0
+ranges = []
 
-levels = []
+with open("input.txt", 'r') as f:
+  line = f.readline().strip()
+  all_ranges = line.split(',')
+  for rang in all_ranges:
+    start, end = rang.split('-')
+    ranges.append(start)
+    ranges.append(end)
+    ranges.extend(range(int(start) + 1, int(end)))
+      
 
-with open("input.txt", "r") as f:
-    for line in f.readlines():
-        levels.append(list(map(int, line.strip().split(' '))))
+result = 0
 
-strictlyIncreasing = lambda arr: all([arr[i] < arr[i+1] for i in range(len(arr) - 1)])
-strictlyDecreasing = lambda arr: all([arr[i] > arr[i+1] for i in range(len(arr) - 1)])
+for num in ranges:
+  numString = str(num)
+  mid = (len(numString) + 1) // 2
+  if numString[:mid] == numString[mid:]:
+    result += int(num)
+  
+print(f"Part 1: {result}")
 
-diffCheck = lambda arr: all([1 <= abs(arr[i] - arr[i+1]) <= 3 for i in range(len(arr) - 1)])
-
-# Part one
-for level in levels:
-    if (strictlyIncreasing(level) or strictlyDecreasing(level)) and diffCheck(level):
-        count += 1
-
-print(f"Part one result is: {count}")
-
-
-# Part two
-count = 0
-
-for level in levels:
-    level_tests = []
-    for i in range(len(level)):
-        level_copy = level[:]
-        level_copy.pop(i)
-
-        level_tests.append((strictlyIncreasing(level_copy) or strictlyDecreasing(level_copy)) and diffCheck(level_copy))
+resultPartTwo = 0
+for num in ranges:
+  numString = str(num)
+  mid = (len(numString) + 1) // 2
+  invalid = False
+  for length in range(1, mid + 1):
+    part = numString[:length]
+    times = len(numString) // length 
+    if part * times == numString and times >= 2:
+      resultPartTwo += int(num)
+      break
     
-    if any(level_tests): count += 1
-
-print(f"Part two result is {count}")
+print(f"Part 2: {resultPartTwo}")
